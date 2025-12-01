@@ -1,0 +1,72 @@
+name: CCP Full Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # -------------------------------
+      # 1️⃣ Checkout del repo
+      # -------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # -------------------------------
+      # 2️⃣ Configurar AWS
+      # -------------------------------
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+
+      # -------------------------------
+      # 3️⃣ Empaquetar Backend
+      # -------------------------------
+      - name: Package Backend
+        run: |
+          tar -czf backend.tar.gz -C backend .
+
+      # -------------------------------
+      # 4️⃣ Deploy Backend via SSM
+      # -------------------------------
+      - name: Deploy Backend
+        run: |
+          aws ssm send-command \
+            --targets "Key=InstanceIds,Values=${{ secrets.EC2_INSTANCE_ID }}" \
+            --document-name "AWS-RunShellScript" \
+            --comment "Deploy backend" \
+            --parameters 'commands=[
+              "mkdir -p /var/www/backend",
+              "rm -rf /var/www/backend/*",
+              "cp /tmp/backend.tar.gz /var/www/backend/backend.tar.gz",
+              "cd /var/www/backend",
+              "tar -xzf backend.tar.gz",
+              "rm backend.tar.gz",
+              "npm install",
+              "pm2 restart backend || pm2 start index.js --name backend",
+              "pm2 save"
+            ]' \
+            --region us-east-2
+
+      # -------------------------------
+      # 5️⃣ Deploy Frontend a S3
+      # -------------------------------
+      - name: Deploy Frontend to S3
+        run: |
+          aws s3 sync frontend/ s3://frontend-tienda/ --delete
+
+      # -------------------------------
+      # 6️⃣ Invalidar cache de CloudFront
+      # -------------------------------
+      - name: CloudFront Invalidation
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.CLOUDFRONT_ID }} \
+            --paths "/*"
