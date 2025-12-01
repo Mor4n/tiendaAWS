@@ -1,0 +1,41 @@
+name: Deploy Backend to EC2
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "backend/**"   # Solo se activa si cambias archivos del backend
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Add SSH key
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.EC2_KEY }}
+
+      - name: Copy backend files to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_HOST }} "sudo rm -rf /var/www/backend/*"
+          scp -o StrictHostKeyChecking=no -r backend/* ec2-user@${{ secrets.EC2_HOST }}:/var/www/backend/
+
+      - name: Install dependencies & restart PM2
+        run: |
+          ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_HOST }} << 'EOF'
+            cd /var/www/backend
+
+            # Instalar dependencias
+            npm install
+
+            # Restart PM2 (o iniciar si no existe)
+            pm2 restart backend || pm2 start index.js --name backend
+
+            # Guardar proceso para reinicios del servidor
+            pm2 save
+          EOF
