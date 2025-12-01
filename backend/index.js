@@ -1,0 +1,51 @@
+require('dotenv').config();
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const jwt = require('jsonwebtoken');
+const { getProducts, createOrder, getUserOrders } = require('./utils/dynamo');
+
+const app = express();
+app.use(cors());
+app.use(bodyParser.json());
+
+// Middleware Cognito
+const verifyToken = (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ error: 'Token requerido' });
+
+  jwt.verify(token, 'COGNITO_PUBLIC_KEY_O_JWK', (err, decoded) => {
+    if (err) return res.status(401).json({ error: 'Token inválido' });
+    req.userId = decoded.sub;
+    next();
+  });
+};
+
+// Endpoints
+app.get('/products', async (req, res) => {
+  const category = req.query.category;
+  const data = await getProducts(category);
+  res.json(data.Items);
+});
+
+app.post('/orders', verifyToken, async (req, res) => {
+  const order = {
+    orderId: Date.now().toString(),
+    userId: req.userId,
+    products: req.body.products,
+    total: req.body.total,
+    status: "pending",
+    createdAt: new Date().toISOString()
+  };
+  await createOrder(order);
+  res.json(order);
+});
+
+app.get('/orders', verifyToken, async (req, res) => {
+  const data = await getUserOrders(req.userId);
+  res.json(data.Items);
+});
+
+// Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));

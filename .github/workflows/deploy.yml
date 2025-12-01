@@ -27,14 +27,51 @@ jobs:
           aws-region: us-east-2
 
       # -------------------------------
-      # 3️⃣ Empaquetar Backend
+      # 3️⃣ Setup Node.js
+      # -------------------------------
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
+
+      # -------------------------------
+      # 4️⃣ Build Frontend (React + Vite)
+      # -------------------------------
+      - name: Install Frontend Dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Build Frontend
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_COGNITO_USER_POOL_ID: ${{ secrets.VITE_COGNITO_USER_POOL_ID }}
+          VITE_COGNITO_CLIENT_ID: ${{ secrets.VITE_COGNITO_CLIENT_ID }}
+          VITE_COGNITO_REGION: ${{ secrets.VITE_COGNITO_REGION }}
+        run: |
+          cd frontend
+          npm run build
+
+      # -------------------------------
+      # 5️⃣ Deploy Frontend a S3
+      # -------------------------------
+      - name: Deploy Frontend to S3
+        run: |
+          aws s3 sync frontend/dist/ s3://frontend-tienda/ --delete
+
+      # -------------------------------
+      # 6️⃣ Empaquetar Backend
       # -------------------------------
       - name: Package Backend
         run: |
           tar -czf backend.tar.gz -C backend .
 
       # -------------------------------
-      # 4️⃣ Deploy Backend via SSM
+      # 7️⃣ Deploy Backend via SSM
       # -------------------------------
       - name: Deploy Backend
         run: |
@@ -56,14 +93,7 @@ jobs:
             --region us-east-2
 
       # -------------------------------
-      # 5️⃣ Deploy Frontend a S3
-      # -------------------------------
-      - name: Deploy Frontend to S3
-        run: |
-          aws s3 sync frontend/ s3://frontend-tienda/ --delete
-
-      # -------------------------------
-      # 6️⃣ Invalidar cache de CloudFront
+      # 8️⃣ Invalidar cache de CloudFront
       # -------------------------------
       - name: CloudFront Invalidation
         run: |

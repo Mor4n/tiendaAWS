@@ -1,0 +1,169 @@
+{
+  "Products": [
+    {
+      "PutRequest": {
+        "Item": {
+          "productId": {"S": "prod-001"},
+          "name": {"S": "Laptop Dell XPS 15"},
+          "category": {"S": "electronics"},
+          "price": {"N": "1299.99"},
+          "stock": {"N": "10"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "productId": {"S": "prod-002"},
+          "name": {"S": "iPhone 15 Pro"},
+          "category": {"S": "electronics"},
+          "price": {"N": "999.99"},
+          "stock": {"N": "15"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "productId": {"S": "prod-003"},
+          "name": {"S": "Samsung Galaxy S24"},
+          "category": {"S": "electronics"},
+          "price": {"N": "899.99"},
+          "stock": {"N": "20"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "productId": {"S": "prod-004"},
+          "name": {"S": "Camiseta Nike Deportiva"},
+          "category": {"S": "clothing"},
+          "price": {"N": "49.99"},
+          "stock": {"N": "50"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "productId": {"S": "prod-005"},
+          "name": {"S": "Jeans Levi's 501"},
+          "category": {"S": "clothing"},
+          "price": {"N": "79.99"},
+          "stock": {"N": "30"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "productId": {"S": "prod-006"},
+          "name": {"S": "Libro: Clean Code"},
+          "category": {"S": "books"},
+          "price": {"N": "39.99"},
+          "stock": {"N": "100"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "productId": {"S": "prod-007"},
+          "name": {"S": "Libro: AWS CCP Study Guide"},
+          "category": {"S": "books"},
+          "price": {"N": "49.99"},
+          "stock": {"N": "75"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "productId": {"S": "prod-008"},
+          "name": {"S": "Lámpara LED Inteligente"},
+          "category": {"S": "home"},
+          "price": {"N": "29.99"},
+          "stock": {"N": "40"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "productId": {"S": "prod-009"},
+          "name": {"S": "Cafetera Nespresso"},
+          "category": {"S": "home"},
+          "price": {"N": "199.99"},
+          "stock": {"N": "12"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "productId": {"S": "prod-010"},
+          "name": {"S": "Aspiradora Robot iRobot"},
+          "category": {"S": "home"},
+          "price": {"N": "349.99"},
+          "stock": {"N": "8"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "productId": {"S": "prod-011"},
+          "name": {"S": "Zapatillas Adidas Running"},
+          "category": {"S": "clothing"},
+          "price": {"N": "89.99"},
+          "stock": {"N": "25"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "productId": {"S": "prod-012"},
+          "name": {"S": "AirPods Pro 2"},
+          "category": {"S": "electronics"},
+          "price": {"N": "249.99"},
+          "stock": {"N": "18"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "productId": {"S": "prod-013"},
+          "name": {"S": "Mochila The North Face"},
+          "category": {"S": "clothing"},
+          "price": {"N": "129.99"},
+          "stock": {"N": "15"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "productId": {"S": "prod-014"},
+          "name": {"S": "Libro: React Patterns"},
+          "category": {"S": "books"},
+          "price": {"N": "44.99"},
+          "stock": {"N": "60"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "productId": {"S": "prod-015"},
+          "name": {"S": "Smart Speaker Amazon Echo"},
+          "category": {"S": "electronics"},
+          "price": {"N": "99.99"},
+          "stock": {"N": "22"}
+        }
+      }
+    }
+  ]
+}
