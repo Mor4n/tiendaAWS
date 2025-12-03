@@ -128,6 +128,15 @@ app.post('/orders', verifyToken, async (req, res) => {
 app.get('/orders', verifyToken, async (req, res) => {
   try {
     console.log('📋 Obteniendo órdenes para usuario:', req.userId);
+    const data = await getUserOrders(req.userId);
+    console.log('✅ Órdenes encontradas:', data.Items?.length || 0);
+    res.json(data.Items || []);
+  } catch (err) {
+    console.error('❌ Error al obtener órdenes:', err);
+    res.status(500).json({ error: 'Error al obtener órdenes', details: err.message });
+  }
+});
+
 // Start server
 const PORT = process.env.PORT || 3000;
 const HOST = '0.0.0.0'; // Escuchar en todas las interfaces (necesario para EC2)
@@ -139,13 +148,4 @@ app.listen(PORT, HOST, () => {
   console.log('   Client ID:', process.env.COGNITO_CLIENT_ID);
   console.log('   Region:', process.env.AWS_REGION);
   console.log('========================================\n');
-});
-});
-
-// Start server
-const PORT = process.env.PORT || 3000;
-const HOST = '0.0.0.0'; // Escuchar en todas las interfaces (necesario para EC2)
-app.listen(PORT, HOST, () => {
-  console.log(`Backend running on http://${HOST}:${PORT}`);
-  console.log('Ready to accept external connections');
 });
