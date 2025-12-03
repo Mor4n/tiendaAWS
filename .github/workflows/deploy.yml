@@ -10,11 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1) Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2) Configurar AWS
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -22,13 +20,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
 
-      # 3) Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      # 4) Build frontend
       - name: Install Frontend Dependencies
         run: |
           cd frontend
@@ -44,12 +40,10 @@ jobs:
           cd frontend
           npm run build
 
-      # 5) Deploy frontend a S3
       - name: Deploy Frontend to S3
         run: |
           aws s3 sync frontend/dist/ s3://frontend-tienda/ --delete
 
-      # 6) Empaquetar backend y subirlo al bucket temporal
       - name: Package Backend
         run: |
           tar -czf backend.tar.gz -C backend .
@@ -58,7 +52,6 @@ jobs:
         run: |
           aws s3 cp backend.tar.gz s3://backend-artifacts-brayan/backend.tar.gz
 
-      # 7) Deploy backend usando SSM
       - name: Deploy Backend via SSM
         run: |
           aws ssm send-command \
@@ -95,7 +88,6 @@ jobs:
             ]' \
             --region us-east-2
 
-      # 8) Invalidar Cache CloudFront
       - name: CloudFront Invalidation
         run: |
           aws cloudfront create-invalidation \
