@@ -48,4 +48,8 @@ app.get('/orders', verifyToken, async (req, res) => {
 
 // Start server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));
+const HOST = '0.0.0.0'; // Escuchar en todas las interfaces (necesario para EC2)
+app.listen(PORT, HOST, () => {
+  console.log(`Backend running on http://${HOST}:${PORT}`);
+  console.log('Ready to accept external connections');
+});

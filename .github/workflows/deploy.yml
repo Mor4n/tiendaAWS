@@ -10,15 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # -------------------------------
-      # 1️⃣ Checkout del repo
-      # -------------------------------
+      # 1) Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # -------------------------------
-      # 2️⃣ Configurar AWS
-      # -------------------------------
+      # 2) Configurar AWS
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -26,21 +22,13 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
 
-      # -------------------------------
-      # 3️⃣ Setup Node.js
-      # -------------------------------
+      # 3) Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: |
-            backend/package-lock.json
-            frontend/package-lock.json
 
-      # -------------------------------
-      # 4️⃣ Build Frontend (React + Vite)
-      # -------------------------------
+      # 4) Build frontend
       - name: Install Frontend Dependencies
         run: |
           cd frontend
@@ -56,45 +44,40 @@ jobs:
           cd frontend
           npm run build
 
-      # -------------------------------
-      # 5️⃣ Deploy Frontend a S3
-      # -------------------------------
+      # 5) Deploy frontend a S3
       - name: Deploy Frontend to S3
         run: |
           aws s3 sync frontend/dist/ s3://frontend-tienda/ --delete
 
-      # -------------------------------
-      # 6️⃣ Empaquetar Backend
-      # -------------------------------
+      # 6) Empaquetar backend y subirlo al bucket temporal
       - name: Package Backend
         run: |
           tar -czf backend.tar.gz -C backend .
 
-      # -------------------------------
-      # 7️⃣ Deploy Backend via SSM
-      # -------------------------------
-      - name: Deploy Backend
+      - name: Upload Backend Artifact
+        run: |
+          aws s3 cp backend.tar.gz s3://backend-artifacts-brayan/backend.tar.gz
+
+      # 7) Deploy backend usando SSM
+      - name: Deploy Backend via SSM
         run: |
           aws ssm send-command \
             --targets "Key=InstanceIds,Values=${{ secrets.EC2_INSTANCE_ID }}" \
             --document-name "AWS-RunShellScript" \
             --comment "Deploy backend" \
             --parameters 'commands=[
+              "aws s3 cp s3://backend-artifacts-brayan/backend.tar.gz /tmp/backend.tar.gz",
               "mkdir -p /var/www/backend",
               "rm -rf /var/www/backend/*",
-              "cp /tmp/backend.tar.gz /var/www/backend/backend.tar.gz",
+              "tar -xzf /tmp/backend.tar.gz -C /var/www/backend",
               "cd /var/www/backend",
-              "tar -xzf backend.tar.gz",
-              "rm backend.tar.gz",
               "npm install",
               "pm2 restart backend || pm2 start index.js --name backend",
               "pm2 save"
             ]' \
             --region us-east-2
 
-      # -------------------------------
-      # 8️⃣ Invalidar cache de CloudFront
-      # -------------------------------
+      # 8) Invalidar Cache CloudFront
       - name: CloudFront Invalidation
         run: |
           aws cloudfront create-invalidation \

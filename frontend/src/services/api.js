@@ -1,6 +1,12 @@
 import axios from 'axios';
 import { API_CONFIG } from '../config';
 
+// 🐛 DEBUG: Mostrar la URL del API
+console.log('🔧 API Configuration:', {
+  baseURL: API_CONFIG.baseUrl,
+  timestamp: new Date().toISOString()
+});
+
 const api = axios.create({
   baseURL: API_CONFIG.baseUrl,
   headers: {
@@ -39,8 +45,20 @@ api.interceptors.response.use(
 // ===== Productos =====
 export const getProducts = async (category = null) => {
   const url = category ? `/products?category=${category}` : '/products';
-  const response = await api.get(url);
-  return response.data;
+  console.log('📦 Fetching products from:', `${API_CONFIG.baseUrl}${url}`);
+  try {
+    const response = await api.get(url);
+    console.log('✅ Products loaded:', response.data.length, 'items');
+    return response.data;
+  } catch (error) {
+    console.error('❌ Error fetching products:', {
+      message: error.message,
+      url: `${API_CONFIG.baseUrl}${url}`,
+      status: error.response?.status,
+      data: error.response?.data
+    });
+    throw error;
+  }
 };
 
 export const getProductById = async (productId) => {
