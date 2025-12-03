@@ -14,12 +14,12 @@ const Cart = () => {
 
   const getProductEmoji = (category) => {
     const emojis = {
-      electronics: '💻',
-      clothing: '👕',
-      books: '📚',
-      home: '🏠',
-      sports: '⚽',
-      toys: '🎮',
+      electronica: '💻',
+      ropa: '👕',
+      libros: '📚',
+      hogar: '🏠',
+      deportes: '⚽',
+      juguetes: '🎮',
     };
     return emojis[category] || '📦';
   };
@@ -100,7 +100,6 @@ const Cart = () => {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Cart Items */}
         <div className="lg:col-span-2">
           <div className="bg-white rounded-lg shadow-md p-6">
             {cart.map((item) => (
@@ -108,12 +107,10 @@ const Cart = () => {
                 key={item.productId}
                 className="flex items-center gap-4 py-6 border-b last:border-b-0"
               >
-                {/* Product Image */}
                 <div className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center text-4xl flex-shrink-0">
                   {getProductEmoji(item.category)}
                 </div>
 
-                {/* Product Info */}
                 <div className="flex-grow">
                   <h3 className="font-bold text-lg mb-1">{item.name}</h3>
                   <p className="text-primary-500 font-bold text-xl">
@@ -121,7 +118,6 @@ const Cart = () => {
                   </p>
                 </div>
 
-                {/* Quantity Controls */}
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => updateQuantity(item.productId, item.quantity - 1)}
@@ -138,14 +134,12 @@ const Cart = () => {
                   </button>
                 </div>
 
-                {/* Item Total */}
                 <div className="text-right flex-shrink-0 w-24">
                   <p className="font-bold text-lg">
                     ${(item.price * item.quantity).toFixed(2)}
                   </p>
                 </div>
 
-                {/* Remove Button */}
                 <button
                   onClick={() => removeFromCart(item.productId)}
                   className="text-red-500 hover:text-red-700 flex-shrink-0"
@@ -169,7 +163,6 @@ const Cart = () => {
           </div>
         </div>
 
-        {/* Order Summary */}
         <div className="lg:col-span-1">
           <div className="bg-white rounded-lg shadow-md p-6 sticky top-24">
             <h3 className="text-2xl font-bold mb-6">Resumen del Pedido</h3>

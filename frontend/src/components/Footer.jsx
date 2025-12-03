@@ -5,14 +5,12 @@ const Footer = () => {
     <footer className="bg-gray-800 text-gray-300 mt-16">
       <div className="container-custom py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* About Section */}
           <div>
             <h3 className="text-primary-500 text-xl font-bold mb-4">TiendaAWS</h3>
             <p className="mb-2">E-commerce desarrollado con AWS Services</p>
             <p className="text-primary-400">🎓 Proyecto AWS CCP</p>
           </div>
 
-          {/* AWS Services */}
           <div>
             <h4 className="text-white text-lg font-semibold mb-4">Servicios AWS</h4>
             <ul className="space-y-2">
@@ -24,7 +22,6 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Links */}
           <div>
             <h4 className="text-white text-lg font-semibold mb-4">Enlaces</h4>
             <ul className="space-y-2">
@@ -53,7 +50,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-gray-700 mt-8 pt-8 text-center">
-          <p>&copy; 2025 TiendaAWS. Proyecto educativo.</p>
+          <p>&copy; 2025 TiendaAWS.</p>
         </div>
       </div>
     </footer>

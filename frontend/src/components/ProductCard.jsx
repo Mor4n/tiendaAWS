@@ -5,12 +5,12 @@ const ProductCard = ({ product }) => {
 
   const getProductEmoji = (category) => {
     const emojis = {
-      electronics: '💻',
-      clothing: '👕',
-      books: '📚',
-      home: '🏠',
-      sports: '⚽',
-      toys: '🎮',
+      electronica: '💻',
+      ropa: '👕',
+      libros: '📚',
+      hogar: '🏠',
+      deportes: '⚽',
+      juguetes: '🎮',
     };
     return emojis[category] || '📦';
   };
@@ -38,7 +38,7 @@ const ProductCard = ({ product }) => {
   const handleAddToCart = () => {
     const result = addToCart(product);
     if (result.success) {
-      // Podríamos agregar una notificación aquí
+      // Podría agregarse una notificación aquí
       console.log(result.message);
     } else {
       alert(result.message);
@@ -47,32 +47,25 @@ const ProductCard = ({ product }) => {
 
   return (
     <div className="card card-hover">
-      {/* Image */}
       <div className="w-full h-64 bg-gray-100 flex items-center justify-center text-6xl">
         {getProductEmoji(product.category)}
       </div>
 
-      {/* Content */}
       <div className="p-6">
-        {/* Category Badge */}
         <span className="inline-block bg-secondary-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase mb-2">
           {product.category}
         </span>
 
-        {/* Product Name */}
         <h3 className="text-xl font-bold text-gray-900 mb-2">
           {product.name}
         </h3>
 
-        {/* Price */}
         <p className="text-3xl font-bold text-primary-500 mb-2">
           ${product.price.toFixed(2)}
         </p>
 
-        {/* Stock */}
         <div className="mb-4">{getStockBadge(product.stock)}</div>
 
-        {/* Add to Cart Button */}
         <button
           onClick={handleAddToCart}
           disabled={product.stock === 0}

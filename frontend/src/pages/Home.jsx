@@ -10,11 +10,11 @@ const Home = () => {
   const [activeCategory, setActiveCategory] = useState('all');
 
   const categories = [
-    { id: 'all', name: 'Todos' },
-    { id: 'electronics', name: 'Electrónica' },
-    { id: 'clothing', name: 'Ropa' },
-    { id: 'books', name: 'Libros' },
-    { id: 'home', name: 'Hogar' },
+    { id: 'todos', name: 'Todos' },
+    { id: 'electronica', name: 'Electrónica' },
+    { id: 'ropa', name: 'Ropa' },
+    { id: 'libros', name: 'Libros' },
+    { id: 'hogar', name: 'Hogar' },
   ];
 
   useEffect(() => {
@@ -51,7 +51,6 @@ const Home = () => {
 
   return (
     <div>
-      {/* Hero Section -*/}
       <section className="bg-gradient-to-r from-secondary-500 to-secondary-600 text-white py-20">
         <div className="container-custom text-center">
           <h2 className="text-5xl font-bold mb-4">Bienvenido a TiendaAWS</h2>
@@ -67,14 +66,12 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Products Section */}
       <section id="productos" className="py-16">
         <div className="container-custom">
           <h2 className="text-4xl font-bold text-center mb-8">
             Nuestros Productos
           </h2>
 
-          {/* Category Filters */}
           <div className="flex flex-wrap justify-center gap-4 mb-12">
             {categories.map((category) => (
               <button
@@ -91,7 +88,6 @@ const Home = () => {
             ))}
           </div>
 
-          {/* Loading State */}
           {loading && (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary-500 mx-auto mb-4"></div>
@@ -99,14 +95,12 @@ const Home = () => {
             </div>
           )}
 
-          {/* Error State */}
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-8">
               {error}
             </div>
           )}
 
-          {/* Products Grid */}
           {!loading && !error && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredProducts.length > 0 ? (
