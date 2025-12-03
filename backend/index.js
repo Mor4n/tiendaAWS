@@ -6,7 +6,29 @@ const jwt = require('jsonwebtoken');
 const { getProducts, createOrder, getUserOrders } = require('./utils/dynamo');
 
 const app = express();
-app.use(cors());
+
+// CORS configurado para solo permitir tu CloudFront
+const allowedOrigins = [
+  'https://d1reehl64quwwb.cloudfront.net',
+  'http://localhost:5173', // Para desarrollo local
+  'http://localhost:4173'  // Para preview local
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Permitir requests sin origin (como Postman, curl)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.warn(`⚠️  Blocked request from unauthorized origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
+
 app.use(bodyParser.json());
 
 // Middleware Cognito
@@ -22,6 +44,16 @@ const verifyToken = (req, res, next) => {
 };
 
 // Endpoints
+// Health check
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    service: 'backend-api',
+    version: '1.0.0'
+  });
+});
+
 app.get('/products', async (req, res) => {
   const category = req.query.category;
   const data = await getProducts(category);
