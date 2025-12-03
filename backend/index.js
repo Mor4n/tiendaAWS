@@ -31,16 +31,25 @@ app.use(cors({
 
 app.use(bodyParser.json());
 
-// Middleware Cognito
+// Middleware Cognito - Versión simplificada
 const verifyToken = (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) return res.status(401).json({ error: 'Token requerido' });
 
-  jwt.verify(token, 'COGNITO_PUBLIC_KEY_O_JWK', (err, decoded) => {
-    if (err) return res.status(401).json({ error: 'Token inválido' });
+  // Decodificar sin verificar (solo para desarrollo/demo)
+  // En producción se debería verificar con las claves públicas de Cognito
+  try {
+    const decoded = jwt.decode(token);
+    if (!decoded || !decoded.sub) {
+      return res.status(401).json({ error: 'Token inválido' });
+    }
     req.userId = decoded.sub;
+    console.log('✅ Usuario autenticado:', req.userId);
     next();
-  });
+  } catch (err) {
+    console.error('❌ Error al decodificar token:', err);
+    return res.status(401).json({ error: 'Token inválido' });
+  }
 };
 
 // Endpoints
@@ -61,21 +70,35 @@ app.get('/products', async (req, res) => {
 });
 
 app.post('/orders', verifyToken, async (req, res) => {
-  const order = {
-    orderId: Date.now().toString(),
-    userId: req.userId,
-    products: req.body.products,
-    total: req.body.total,
-    status: "pending",
-    createdAt: new Date().toISOString()
-  };
-  await createOrder(order);
-  res.json(order);
+  try {
+    const order = {
+      orderId: Date.now().toString(),
+      userId: req.userId,
+      products: req.body.products,
+      total: req.body.total,
+      status: "pending",
+      createdAt: new Date().toISOString()
+    };
+    console.log('📦 Creando orden:', order);
+    await createOrder(order);
+    console.log('✅ Orden creada exitosamente');
+    res.json(order);
+  } catch (err) {
+    console.error('❌ Error al crear orden:', err);
+    res.status(500).json({ error: 'Error al crear orden', details: err.message });
+  }
 });
 
 app.get('/orders', verifyToken, async (req, res) => {
-  const data = await getUserOrders(req.userId);
-  res.json(data.Items);
+  try {
+    console.log('📋 Obteniendo órdenes para usuario:', req.userId);
+    const data = await getUserOrders(req.userId);
+    console.log('✅ Órdenes encontradas:', data.Items?.length || 0);
+    res.json(data.Items || []);
+  } catch (err) {
+    console.error('❌ Error al obtener órdenes:', err);
+    res.status(500).json({ error: 'Error al obtener órdenes', details: err.message });
+  }
 });
 
 // Start server

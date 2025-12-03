@@ -73,7 +73,8 @@ export const createOrder = async (orderData) => {
 };
 
 export const getUserOrders = async (userId) => {
-  const response = await api.get(`/orders?userId=${userId}`);
+  // El userId se obtiene del token JWT en el backend, no necesitamos pasarlo
+  const response = await api.get('/orders');
   return response.data;
 };
 
