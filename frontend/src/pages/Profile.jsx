@@ -16,11 +16,13 @@ const Profile = () => {
     try {
       setLoading(true);
       const userId = localStorage.getItem('userId');
+      console.log('👤 UserId en localStorage:', userId);
       const data = await getUserOrders(userId);
+      console.log('📦 Órdenes cargadas:', data);
       setOrders(data);
     } catch (err) {
       setError('Error al cargar los pedidos');
-      console.error(err);
+      console.error('❌ Error al cargar órdenes:', err);
     } finally {
       setLoading(false);
     }

@@ -68,13 +68,17 @@ export const getProductById = async (productId) => {
 
 // ===== Órdenes =====
 export const createOrder = async (orderData) => {
+  console.log('📦 Creando orden:', orderData);
   const response = await api.post('/orders', orderData);
+  console.log('✅ Orden creada:', response.data);
   return response.data;
 };
 
 export const getUserOrders = async (userId) => {
   // El userId se obtiene del token JWT en el backend, no necesitamos pasarlo
+  console.log('📋 Obteniendo órdenes del usuario');
   const response = await api.get('/orders');
+  console.log('✅ Órdenes recibidas:', response.data);
   return response.data;
 };
 

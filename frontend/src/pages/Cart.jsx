@@ -47,7 +47,9 @@ const Cart = () => {
         total: getTotalPrice(),
       };
 
-      await createOrder(orderData);
+      console.log('🛒 Iniciando checkout con:', orderData);
+      const result = await createOrder(orderData);
+      console.log('✅ Respuesta del servidor:', result);
       clearCart();
       setSuccess('¡Pedido realizado exitosamente!');
       
