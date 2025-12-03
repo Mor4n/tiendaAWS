@@ -3,9 +3,29 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
+const jwksClient = require('jwks-rsa');
 const { getProducts, createOrder, getUserOrders } = require('./utils/dynamo');
 
 const app = express();
+
+// Configurar JWKS client para verificar tokens de Cognito
+const client = jwksClient({
+  jwksUri: `https://cognito-idp.${process.env.AWS_REGION}.amazonaws.com/${process.env.COGNITO_POOL_ID}/.well-known/jwks.json`,
+  cache: true,
+  cacheMaxAge: 86400000 // 24 horas
+});
+
+// Función para obtener la clave pública
+const getSigningKey = (header, callback) => {
+  client.getSigningKey(header.kid, (err, key) => {
+    if (err) {
+      callback(err);
+      return;
+    }
+    const signingKey = key.getPublicKey();
+    callback(null, signingKey);
+  });
+};
 
 // CORS configurado para solo permitir tu CloudFront
 const allowedOrigins = [
@@ -31,25 +51,29 @@ app.use(cors({
 
 app.use(bodyParser.json());
 
-// Middleware Cognito - Versión simplificada
+// Middleware Cognito - Verificación segura con JWKS
 const verifyToken = (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(401).json({ error: 'Token requerido' });
+  if (!token) {
+    console.warn('⚠️  Request sin token');
+    return res.status(401).json({ error: 'Token requerido' });
+  }
 
-  // Decodificar sin verificar (solo para desarrollo/demo)
-  // En producción se debería verificar con las claves públicas de Cognito
-  try {
-    const decoded = jwt.decode(token);
-    if (!decoded || !decoded.sub) {
-      return res.status(401).json({ error: 'Token inválido' });
+  // Verificar el token con las claves públicas de Cognito
+  jwt.verify(token, getSigningKey, {
+    algorithms: ['RS256'],
+    issuer: `https://cognito-idp.${process.env.AWS_REGION}.amazonaws.com/${process.env.COGNITO_POOL_ID}`,
+    audience: process.env.COGNITO_CLIENT_ID
+  }, (err, decoded) => {
+    if (err) {
+      console.error('❌ Error al verificar token:', err.message);
+      return res.status(401).json({ error: 'Token inválido o expirado' });
     }
+    
     req.userId = decoded.sub;
     console.log('✅ Usuario autenticado:', req.userId);
     next();
-  } catch (err) {
-    console.error('❌ Error al decodificar token:', err);
-    return res.status(401).json({ error: 'Token inválido' });
-  }
+  });
 };
 
 // Endpoints
