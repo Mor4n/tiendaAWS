@@ -66,14 +66,30 @@ jobs:
             --document-name "AWS-RunShellScript" \
             --comment "Deploy backend" \
             --parameters 'commands=[
+              "echo \"📦 Downloading backend artifact...\"",
               "aws s3 cp s3://backend-artifacts-brayan/backend.tar.gz /tmp/backend.tar.gz",
+              "echo \"🗂️  Extracting to /var/www/backend...\"",
               "mkdir -p /var/www/backend",
               "rm -rf /var/www/backend/*",
               "tar -xzf /tmp/backend.tar.gz -C /var/www/backend",
               "cd /var/www/backend",
-              "npm install",
-              "pm2 restart backend || pm2 start index.js --name backend",
-              "pm2 save"
+              "echo \"⚙️  Creating .env file...\"",
+              "cat > .env << EOF",
+              "AWS_REGION=us-east-2",
+              "PRODUCTS_TABLE=Products",
+              "ORDERS_TABLE=Orders",
+              "COGNITO_POOL_ID=4u537dcuk8o8cc1on9vubhortf",
+              "PORT=3000",
+              "EOF",
+              "echo \"📥 Installing dependencies...\"",
+              "npm install --production",
+              "echo \"🔄 Restarting PM2...\"",
+              "pm2 stop backend 2>/dev/null || true",
+              "pm2 delete backend 2>/dev/null || true",
+              "pm2 start index.js --name backend",
+              "pm2 save",
+              "echo \"✅ Backend deployed successfully!\"",
+              "pm2 status"
             ]' \
             --region us-east-2
 
