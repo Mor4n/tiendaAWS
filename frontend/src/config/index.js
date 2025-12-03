@@ -4,7 +4,7 @@ export const API_CONFIG = {
   baseUrl: import.meta.env.VITE_API_URL || 'http://localhost:3000',
 };
 
-// 🐛 DEBUG: Log de configuración al cargar
+// 🐛 DEBUG: Log de configuración al cargar-
 console.log('⚙️ Environment Variables:', {
   VITE_API_URL: import.meta.env.VITE_API_URL,
   VITE_COGNITO_USER_POOL_ID: import.meta.env.VITE_COGNITO_USER_POOL_ID,
