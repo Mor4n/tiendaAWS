@@ -9,8 +9,11 @@ const { getProducts, createOrder, getUserOrders } = require('./utils/dynamo');
 const app = express();
 
 // Configurar JWKS client para verificar tokens de Cognito
+const jwksUri = `https://cognito-idp.${process.env.AWS_REGION}.amazonaws.com/${process.env.COGNITO_POOL_ID}/.well-known/jwks.json`;
+console.log('🔐 Configurando JWKS client:', jwksUri);
+
 const client = jwksClient({
-  jwksUri: `https://cognito-idp.${process.env.AWS_REGION}.amazonaws.com/${process.env.COGNITO_POOL_ID}/.well-known/jwks.json`,
+  jwksUri: jwksUri,
   cache: true,
   cacheMaxAge: 86400000 // 24 horas
 });
@@ -59,6 +62,8 @@ const verifyToken = (req, res, next) => {
     return res.status(401).json({ error: 'Token requerido' });
   }
 
+  console.log('🔍 Verificando token JWT con Cognito JWKS...');
+  
   // Verificar el token con las claves públicas de Cognito
   jwt.verify(token, getSigningKey, {
     algorithms: ['RS256'],
@@ -66,12 +71,19 @@ const verifyToken = (req, res, next) => {
     audience: process.env.COGNITO_CLIENT_ID
   }, (err, decoded) => {
     if (err) {
-      console.error('❌ Error al verificar token:', err.message);
-      return res.status(401).json({ error: 'Token inválido o expirado' });
+      console.error('❌ Token verificación fallida:', err.message);
+      console.error('   Tipo de error:', err.name);
+      return res.status(401).json({ 
+        error: 'Token inválido o expirado',
+        details: err.name === 'TokenExpiredError' ? 'Token expirado' : 'Token inválido'
+      });
     }
     
     req.userId = decoded.sub;
-    console.log('✅ Usuario autenticado:', req.userId);
+    console.log('✅ Token verificado correctamente');
+    console.log('   UserId:', req.userId);
+    console.log('   Email:', decoded.email);
+    console.log('   Issuer:', decoded.iss);
     next();
   });
 };
@@ -116,13 +128,18 @@ app.post('/orders', verifyToken, async (req, res) => {
 app.get('/orders', verifyToken, async (req, res) => {
   try {
     console.log('📋 Obteniendo órdenes para usuario:', req.userId);
-    const data = await getUserOrders(req.userId);
-    console.log('✅ Órdenes encontradas:', data.Items?.length || 0);
-    res.json(data.Items || []);
-  } catch (err) {
-    console.error('❌ Error al obtener órdenes:', err);
-    res.status(500).json({ error: 'Error al obtener órdenes', details: err.message });
-  }
+// Start server
+const PORT = process.env.PORT || 3000;
+const HOST = '0.0.0.0'; // Escuchar en todas las interfaces (necesario para EC2)
+app.listen(PORT, HOST, () => {
+  console.log('\n🚀 ========================================');
+  console.log('   Backend running on http://' + HOST + ':' + PORT);
+  console.log('🔐 JWT Verification: ENABLED (Cognito JWKS)');
+  console.log('   Pool ID:', process.env.COGNITO_POOL_ID);
+  console.log('   Client ID:', process.env.COGNITO_CLIENT_ID);
+  console.log('   Region:', process.env.AWS_REGION);
+  console.log('========================================\n');
+});
 });
 
 // Start server
