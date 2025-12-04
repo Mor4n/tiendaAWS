@@ -55,7 +55,7 @@ const Home = () => {
         <div className="container-custom text-center">
           <h2 className="text-5xl font-bold mb-4">Bienvenido a TiendaAWS</h2>
           <p className="text-xl mb-8 opacity-90">
-            Tu tienda en línea potenciada por AWS Cloud
+            Envío rápido hasta la puerta de tu hogar
           </p>
           <a
             href="#productos"
