@@ -30,7 +30,7 @@ const ProductCard = ({ product }) => {
     }
     return (
       <span className="text-green-600 text-sm">
-        Disponible ({stock} unidades)
+        Disponible 
       </span>
     );
   };
