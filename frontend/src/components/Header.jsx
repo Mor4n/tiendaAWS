@@ -11,7 +11,6 @@ const Header = () => {
       <div className="container-custom py-4">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-2">
-            <span className="text-3xl">🛒</span>
             <h1 className="text-2xl font-bold text-primary-500">TiendaAWS</h1>
           </Link>
 
