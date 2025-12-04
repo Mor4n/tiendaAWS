@@ -53,7 +53,7 @@ const Home = () => {
     <div>
       <section className="bg-gradient-to-r from-secondary-500 to-secondary-600 text-white py-20">
         <div className="container-custom text-center">
-          <h2 className="text-5xl font-bold mb-4">Bienvenido a TiendaAWS</h2>
+          <h2 className="text-5xl font-bold mb-4">Bienvenido a Tienda</h2>
           <p className="text-xl mb-8 opacity-90">
             Envío rápido hasta la puerta de tu hogar
           </p>
