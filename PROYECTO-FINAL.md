@@ -310,16 +310,16 @@ Todo el sitio es completamente responsive gracias a Tailwind CSS:
 AWS_REGION=us-east-2
 PRODUCTS_TABLE=Products
 ORDERS_TABLE=Orders
-COGNITO_POOL_ID=us-east-2_bM8G4VUFZ
-COGNITO_CLIENT_ID=4u537dcuk8o8cc1on9vubhortf
+COGNITO_POOL_ID=us-east-2_XXXXXXXXX
+COGNITO_CLIENT_ID=xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 PORT=3000
 ```
 
 ### Variables de Entorno Frontend (.env)
 ```env
 VITE_API_URL=https://wfbcg5b1ka.execute-api.us-east-2.amazonaws.com/prod
-VITE_COGNITO_USER_POOL_ID=us-east-2_bM8G4VUFZ
-VITE_COGNITO_CLIENT_ID=4u537dcuk8o8cc1on9vubhortf
+VITE_COGNITO_USER_POOL_ID=us-east-2_XXXXXXXXX
+VITE_COGNITO_CLIENT_ID=xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 VITE_COGNITO_REGION=us-east-2
 VITE_CLOUDFRONT_URL=https://d1reehl64quwwb.cloudfront.net
 ```

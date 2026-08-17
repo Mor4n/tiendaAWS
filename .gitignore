@@ -1,2 +1,5 @@
 backend/.env
 .env
+frontend/.env
+node_modules/
+coverage/
